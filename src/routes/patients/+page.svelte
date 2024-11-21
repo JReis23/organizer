@@ -5,26 +5,28 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<div class="overflow-x-auto pt-36">
-	<div class="flex h-10 items-center justify-between bg-slate-100 px-1">
+<!-- "fixed flex min-h-screen w-40 flex-col items-center overflow-hidden rounded bg-indigo-900
+text-indigo-300" -->
+<div class="w-full overflow-x-auto">
+	<div class="flex h-10 items-center justify-between bg-indigo-900 px-1 text-indigo-300">
 		<div class="form-control">
 			<input type="text" placeholder="Search" class="input input-bordered h-8 w-24 md:w-auto" />
 		</div>
-		<Button href="./patients/new" className="btn-sm btn-outline btn-success rounded-full"
+		<Button href="./patients/new" className="btn-sm btn-outline btn-success"
 			>{#snippet buttonText()}
 				Ajouter
 			{/snippet}</Button
 		>
 	</div>
-	<table class="table-zebra glass table-lg shadow-xl">
+	<table class="table-zebra glass table-lg w-full shadow-xl">
 		<thead class="bg-blue-200">
 			<tr>
 				<th></th>
-				<th>Nom</th>
-				<th>Adresse</th>
-				<th>Code Postal</th>
-				<th>Numero Telephone</th>
-				<th>Details</th>
+				<th class="text-start">Nom</th>
+				<th class="text-start">Adresse</th>
+				<th class="text-start">Code Postal</th>
+				<th class="text-start">Numero Telephone</th>
+				<th class="text-start">Details</th>
 			</tr>
 		</thead>
 		<tbody>
