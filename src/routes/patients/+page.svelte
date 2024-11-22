@@ -12,7 +12,9 @@ text-indigo-300" -->
 		<div class="form-control">
 			<input type="text" placeholder="Search" class="input input-bordered h-8 w-24 md:w-auto" />
 		</div>
-		<Button href="./patients/new" className="btn-sm btn-outline btn-success"
+		<Button
+			href="./patients/new"
+			className="btn btn-sm text-indigo-300 bg-indigo-900 border-indigo-300 hover:outline-indigo-900 hover:bg-indigo-300 hover:text-indigo-900"
 			>{#snippet buttonText()}
 				Ajouter
 			{/snippet}</Button
