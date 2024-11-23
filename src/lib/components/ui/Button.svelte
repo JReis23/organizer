@@ -35,24 +35,28 @@
 	<button class="btn {className}" {formaction}>{@render buttonText()}</button>
 {:else if href}
 	<a {href} class={className}>
-		<svg
-			class={svg?.class}
-			xmlns={svg?.xmlns}
-			fill={svg?.fill}
-			viewBox={svg?.viewBox}
-			stroke={svg?.stroke}
-		>
-			{#if svg?.path}
-				{#each svg.path as path}
-					<path
-						stroke-linecap={path.stroke_linecap}
-						stroke-linejoin={path.stroke_linejoin}
-						stroke-width={path.stroke_width}
-						d={path.d}
-					/>
-				{/each}
-			{/if}
-		</svg>{@render buttonText()}</a
+		{#if svg}
+			<svg
+				class={svg?.class}
+				xmlns={svg?.xmlns}
+				fill={svg?.fill}
+				viewBox={svg?.viewBox}
+				stroke={svg?.stroke}
+			>
+				{#if svg?.path}
+					{#each svg.path as path}
+						<path
+							stroke-linecap={path.stroke_linecap}
+							stroke-linejoin={path.stroke_linejoin}
+							stroke-width={path.stroke_width}
+							d={path.d}
+						/>
+					{/each}
+				{/if}
+			</svg>
+		{/if}
+
+		{@render buttonText()}</a
 	>
 {:else}
 	<button class="btn {className}">{@render buttonText()}</button>
