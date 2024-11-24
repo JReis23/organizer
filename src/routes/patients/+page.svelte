@@ -3,18 +3,78 @@
 	import Button from '$lib/components/ui/Button.svelte';
 
 	let { data }: { data: PageData } = $props();
+	let filteredPatients = $state(data.patients);
+
+	function todayTasks(data: { patients: PageData['patients'] }) {
+		const today = new Date().toISOString().split('T')[0]; // Date d'aujourd'hui formatée en 'YYYY-MM-DD'
+
+		filteredPatients = data.patients.filter((patient) => {
+			if (!patient.treatmentUpcomming) return false; // Ignore les patients sans date de traitement
+			const treatmentDate = new Date(patient.treatmentUpcomming).toISOString().split('T')[0];
+			return treatmentDate === today;
+		});
+	}
+
+	function showAllTasks() {
+		filteredPatients = data.patients;
+	}
+
+	function dateCompare(item: string | null) {
+		let result: 'success' | 'warning' | 'alert' = 'warning';
+		let formattedDate: string | undefined;
+
+		if (item) {
+			const dateToCompare = new Date(item);
+			// Réinitialise l'heure à 00:00:00
+			dateToCompare.setHours(0, 0, 0, 0);
+
+			// Réinitialise aussi l'heure actuelle à 00:00:00 pour la comparaison
+			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+
+			formattedDate = dateToCompare.toLocaleDateString('fr', {
+				weekday: 'long',
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
+			});
+
+			// Compare les dates sans les heures
+			if (dateToCompare.getTime() < today.getTime()) {
+				result = 'alert';
+			} else if (dateToCompare.getTime() >= today.getTime()) {
+				result = 'success';
+			} else {
+				result = 'warning';
+			}
+		}
+
+		return { result, formattedDate };
+	}
+
+	function handleButtonClick(action: 'all' | 'done' | 'pending') {
+		switch (action) {
+			case 'all':
+				showAllTasks();
+				break;
+			case 'done':
+				todayTasks(data);
+				break;
+			case 'pending':
+				return;
+		}
+	}
 </script>
 
-<!-- component -->
 <div class="w-full sm:px-6">
 	<div class="px-4 py-4 md:px-10 md:py-7">
 		<div class="flex items-center justify-between">
-			<p
+			<h2
 				tabindex="-1"
 				class="text-base font-bold leading-normal focus:outline-none sm:text-lg md:text-xl lg:text-2xl"
 			>
-				Tasks
-			</p>
+				Patients
+			</h2>
 			<div
 				class="flex cursor-pointer items-center rounded bg-gray-200 px-4 py-3 text-sm font-medium leading-none hover:bg-gray-300"
 			>
@@ -33,30 +93,30 @@
 	<div class="bg-white px-4 py-4 md:px-8 md:py-7 xl:px-10">
 		<div class="items-center justify-between sm:flex">
 			<div class="flex items-center">
-				<a
+				<button
 					class="rounded-full focus:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-800"
-					href="/"
+					onclick={() => handleButtonClick('all')}
 				>
 					<div class="rounded-full bg-indigo-100 px-8 py-2 text-indigo-700">
 						<p>All</p>
 					</div>
-				</a>
-				<a
+				</button>
+				<button
 					class="ml-4 rounded-full focus:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-800 sm:ml-8"
-					href="/"
+					onclick={() => handleButtonClick('done')}
 				>
 					<div class="rounded-full px-8 py-2 hover:bg-indigo-100 hover:text-indigo-700">
 						<p>Done</p>
 					</div>
-				</a>
-				<a
+				</button>
+				<button
 					class="ml-4 rounded-full focus:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-800 sm:ml-8"
-					href="/"
+					onclick={() => handleButtonClick('pending')}
 				>
 					<div class="rounded-full px-8 py-2 hover:bg-indigo-100 hover:text-indigo-700">
 						<p>Pending</p>
 					</div>
-				</a>
+				</button>
 			</div>
 			<Button
 				href="./patients/new"
@@ -81,8 +141,11 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each data.patients as patient}
-						<tr tabindex="-1" class="h-16 rounded border border-gray-100 focus:outline-none">
+					{#each filteredPatients as patient}
+						<tr
+							tabindex="-1"
+							class="h-16 rounded border border-gray-100 hover:bg-indigo-50 focus:outline-none"
+						>
 							<td class="">
 								<div class="flex items-center pl-5">
 									<p class="mr-2 text-base font-medium leading-none">
@@ -225,40 +288,37 @@
 								</div>
 							</td>
 							<td class="pl-5">
-								{#if patient.treatmentUpcomming}
-									{@const dateToCompare = new Date(patient.treatmentUpcomming).getTime()}
-								{#if dateToCompare <= Date.now()}
-								<Button href="#" className="rounded bg-red-100 px-3 py-3 text-sm leading-none text-red-700 focus:outline-none">
-									{#snippet buttonText()}
-										{#if patient.treatmentUpcomming}
-											{new Date(patient.treatmentUpcomming).toLocaleDateString('fr', {
-												weekday: 'long',
-												year: 'numeric',
-												month: 'long',
-												day: 'numeric',
-											})}
-										{/if}
-										{/snippet}
-								</Button>
-									{:else}
-									<Button href="#" className="rounded bg-green-300 px-3 py-3 text-sm leading-none text-green-950 focus:outline-none">
+								{#if dateCompare(patient.treatmentUpcomming).result === 'alert'}
+									<Button
+										href="#"
+										className="rounded bg-red-100 px-3 py-3 text-sm leading-none text-red-700 focus:outline-none"
+									>
 										{#snippet buttonText()}
-											{#if patient.treatmentUpcomming}
-											{new Date(patient.treatmentUpcomming).toLocaleDateString('fr', {
-												weekday: 'long',
-												year: 'numeric',
-												month: 'long',
-												day: 'numeric',
-											})}
-												{/if}
+											{dateCompare(patient.treatmentUpcomming).formattedDate}
 										{/snippet}
 									</Button>
-									{/if}
-									{/if}
+								{:else if dateCompare(patient.treatmentUpcomming).result === 'success'}
+									<Button
+										href="#"
+										className="rounded bg-green-300 px-3 py-3 text-sm leading-none text-green-950 focus:outline-none"
+									>
+										{#snippet buttonText()}
+											{dateCompare(patient.treatmentUpcomming).formattedDate}
+										{/snippet}
+									</Button>
+								{:else if dateCompare(patient.treatmentUpcomming).result === 'warning'}
+									<div class="hidden"></div>
+								{/if}
 							</td>
 							<td class="pl-4">
-								<Button className="rounded bg-gray-100 px-5 py-3 text-sm leading-none hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2" href="./patients/{patient.patientId}">{#snippet buttonText()}Détails{/snippet}</Button>
-						</tr>
+								<Button
+									className="rounded bg-gray-100 px-5 py-3 text-sm leading-none hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
+									href="./patients/{patient.patientId}"
+									>{#snippet buttonText()}Détails{/snippet}</Button
+								>
+							</td></tr
+						>
+						<tr class="h-2"></tr>
 					{/each}
 				</tbody>
 			</table>

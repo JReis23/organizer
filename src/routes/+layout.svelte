@@ -25,7 +25,7 @@
 		class="fixed flex min-h-screen w-40 flex-col items-center overflow-hidden rounded bg-indigo-900 text-indigo-300"
 	>
 		<Button
-			className="mt-3 flex w-full items-center px-3"
+			className="mt-3 flex w-full items-center justify-center"
 			href="/"
 			svg={{
 				class: 'h-8 w-8 fill-current',
@@ -44,9 +44,9 @@
 			{/snippet}
 		</Button>
 		<div class="w-full px-2">
-			<div class="mt-3 flex w-full flex-col items-center border-t border-gray-700">
+			<div class="mt-3 flex w-full flex-col items-center justify-center border-t border-gray-600">
 				<Button
-					className="mt-2 flex h-12 w-full items-center rounded px-3 hover:bg-indigo-700"
+					className="mt-2 flex h-12 w-full items-center justify-center rounded px-3 hover:bg-indigo-700"
 					href="/patients"
 					svg={{
 						class: 'h-6 w-6 stroke-current',

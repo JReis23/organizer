@@ -18,6 +18,7 @@ export const load: PageServerLoad = async (event) => {
 			adress: table.adress.adress,
 			postal_code: table.adress.postal_code,
 			city: table.adress.city,
+			country: table.adress.country,
 			email: table.patient.email,
 			phoneNumber: table.patient.phoneNumber,
 			treatmentType: table.treatments.treatmentType,
