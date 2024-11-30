@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
+import type { Session } from '$lib/server/db/schema';
 
 export const load: LayoutServerLoad = async ({ locals, url }) => {
 	console.log({ locals });
@@ -12,6 +13,6 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 	}
 
 	return {
-		session: locals.session
+		session: locals.session as Session
 	};
 };

@@ -6,12 +6,12 @@
 	let filteredPatients = $state(data.patients);
 
 	function todayTasks(data: { patients: PageData['patients'] }) {
-		const today = new Date().toISOString().split('T')[0]; // Date d'aujourd'hui formatée en 'YYYY-MM-DD'
+		const today = new Date().toISOString().split('T')[0];
 
 		filteredPatients = data.patients.filter((patient) => {
-			if (!patient.treatmentUpcomming) return false; // Ignore les patients sans date de traitement
-			const treatmentDate = new Date(patient.treatmentUpcomming).toISOString().split('T')[0];
-			return treatmentDate === today;
+			if (!patient.treatment_date) return false; // Renommé de treatmentUpcomming
+			const treatment_date = new Date(patient.treatment_date).toISOString().split('T')[0];
+			return treatment_date === today;
 		});
 	}
 
@@ -149,7 +149,7 @@
 							<td class="">
 								<div class="flex items-center pl-5">
 									<p class="mr-2 text-base font-medium leading-none">
-										{patient.patientName}
+										{patient.patient_name}
 									</p>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +191,7 @@
 										/>
 									</svg>
 
-									<p class="ml-2 text-sm leading-none">{patient.phoneNumber}</p>
+									<p class="ml-2 text-sm leading-none">{patient.patient_phone_number}</p>
 								</div>
 							</td>
 							<td class="pl-5">
@@ -221,7 +221,7 @@
 										/>
 									</svg>
 
-									<p class="ml-2 text-sm leading-none">{patient.patientCity}</p>
+									<p class="ml-2 text-sm leading-none">{patient.city}</p>
 								</div>
 							</td>
 							<td class="pl-5">
@@ -284,36 +284,36 @@
 											stroke-linejoin="round"
 										/>
 									</svg>
-									<p class="ml-2 text-sm leading-none">{patient.treatmentType}</p>
+									<p class="ml-2 text-sm leading-none">{patient.treatment_type}</p>
 								</div>
 							</td>
 							<td class="pl-5">
-								{#if dateCompare(patient.treatmentUpcomming).result === 'alert'}
+								{#if dateCompare(patient.treatment_date).result === 'alert'}
 									<Button
 										href="#"
 										className="rounded bg-red-100 px-3 py-3 text-sm leading-none text-red-700 focus:outline-none"
 									>
 										{#snippet buttonText()}
-											{dateCompare(patient.treatmentUpcomming).formattedDate}
+											{dateCompare(patient.treatment_date).formattedDate}
 										{/snippet}
 									</Button>
-								{:else if dateCompare(patient.treatmentUpcomming).result === 'success'}
+								{:else if dateCompare(patient.treatment_date).result === 'success'}
 									<Button
 										href="#"
 										className="rounded bg-green-300 px-3 py-3 text-sm leading-none text-green-950 focus:outline-none"
 									>
 										{#snippet buttonText()}
-											{dateCompare(patient.treatmentUpcomming).formattedDate}
+											{dateCompare(patient.treatment_date).formattedDate}
 										{/snippet}
 									</Button>
-								{:else if dateCompare(patient.treatmentUpcomming).result === 'warning'}
+								{:else if dateCompare(patient.treatment_date).result === 'warning'}
 									<div class="hidden"></div>
 								{/if}
 							</td>
 							<td class="pl-4">
 								<Button
 									className="rounded bg-gray-100 px-5 py-3 text-sm leading-none hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
-									href="./patients/{patient.patientId}"
+									href="./patients/{patient.patient_id}"
 									>{#snippet buttonText()}Détails{/snippet}</Button
 								>
 							</td></tr

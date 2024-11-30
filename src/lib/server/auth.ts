@@ -14,51 +14,53 @@ function generateSessionToken(): string {
 	return token;
 }
 
-export async function createSession(userId: string): Promise<table.Session> {
+export async function createSession(user_id: string): Promise<table.Session> {
 	const token = generateSessionToken();
-	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+	const session_id = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const session: table.Session = {
-		id: sessionId,
-		userId,
-		expiresAt: new Date(Date.now() + DAY_IN_MS * 30)
+		id: session_id,
+		user_id,
+		expires_at: new Date(Date.now() + DAY_IN_MS * 30)
 	};
-	await db.insert(table.session).values(session);
+	await db.insert(table.sessions).values(session);
 	return session;
 }
 
-export async function invalidateSession(sessionId: string): Promise<void> {
-	await db.delete(table.session).where(eq(table.session.id, sessionId));
+export async function invalidateSession(session_id: string): Promise<void> {
+	await db.delete(table.sessions).where(eq(table.sessions.id, session_id));
 }
 
-export async function validateSession(sessionId: string) {
+export async function validateSession(session_id: string) {
 	const [result] = await db
 		.select({
-			// Adjust user table here to tweak returned data
-			user: { id: table.user.id, username: table.user.username },
-			session: table.session
+			user: {
+				id: table.users.id,
+				user_name: table.users.user_name
+			},
+			session: table.sessions
 		})
-		.from(table.session)
-		.innerJoin(table.user, eq(table.session.userId, table.user.id))
-		.where(eq(table.session.id, sessionId));
+		.from(table.sessions)
+		.innerJoin(table.users, eq(table.sessions.user_id, table.users.id))
+		.where(eq(table.sessions.id, session_id));
 
 	if (!result) {
 		return { session: null, user: null };
 	}
 	const { session, user } = result;
 
-	const sessionExpired = Date.now() >= session.expiresAt.getTime();
-	if (sessionExpired) {
-		await db.delete(table.session).where(eq(table.session.id, session.id));
+	const session_expired = Date.now() >= session.expires_at.getTime();
+	if (session_expired) {
+		await db.delete(table.sessions).where(eq(table.sessions.id, session.id));
 		return { session: null, user: null };
 	}
 
-	const renewSession = Date.now() >= session.expiresAt.getTime() - DAY_IN_MS * 15;
-	if (renewSession) {
-		session.expiresAt = new Date(Date.now() + DAY_IN_MS * 30);
+	const should_renew = Date.now() >= session.expires_at.getTime() - DAY_IN_MS * 15;
+	if (should_renew) {
+		session.expires_at = new Date(Date.now() + DAY_IN_MS * 30);
 		await db
-			.update(table.session)
-			.set({ expiresAt: session.expiresAt })
-			.where(eq(table.session.id, session.id));
+			.update(table.sessions)
+			.set({ expires_at: session.expires_at })
+			.where(eq(table.sessions.id, session.id));
 	}
 
 	return { session, user };

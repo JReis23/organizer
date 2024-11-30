@@ -21,7 +21,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 			path: '/',
 			sameSite: 'lax',
 			httpOnly: true,
-			expires: session.expiresAt,
+			expires: session.expires_at,
 			secure: !dev
 		});
 	} else {

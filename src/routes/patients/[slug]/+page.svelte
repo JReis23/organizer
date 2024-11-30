@@ -1,31 +1,44 @@
 <script lang="ts">
 	import type { PageData, ActionData } from './$types';
 	import { enhance } from '$app/forms';
+	import Modal from '$lib/components/ui/Modal.svelte';
 
 	let { data }: { data: PageData; form: ActionData } = $props();
-	let patientData = $state(data.patients) as PageData['patients'];
+	let patient_data = $state(data.patients) as PageData['patients'];
 	let patient = $state(firstElement());
 
 	function firstElement() {
-		if (!patientData[0].patientName) return;
-		const nameParts = patientData[0].patientName.split(' ');
+		if (!patient_data[0].patient_name) return;
+		const name_parts = patient_data[0].patient_name.split(' ');
 
-		if (nameParts.length === 1) {
+		if (name_parts.length === 1) {
 			return {
-				...patientData[0],
-				formattedName: nameParts[0]
+				...patient_data[0],
+				formatted_name: name_parts[0]
 			};
 		}
 
-		const firstName = nameParts[0];
-		const lastName = nameParts[nameParts.length - 1];
+		const first_name = name_parts[0];
+		const last_name = name_parts[name_parts.length - 1];
 
 		return {
-			...patientData[0],
-			formattedName: `${firstName} ${lastName}`
+			...patient_data[0],
+			formatted_name: `${first_name} ${last_name}`
 		};
 	}
+
+	let is_open = $state(false);
+
+	function handleClose(): void {
+		is_open = false;
+	}
 </script>
+
+<Modal open={is_open} onClose={handleClose}>
+	{#snippet modalText()}
+		<h2>Modal Content</h2>
+	{/snippet}
+</Modal>
 
 <div class="border">
 	<form
@@ -41,12 +54,55 @@
 		}}
 	>
 		<label class="input input-bordered flex items-center gap-2">
-			treatmentType
-			<input type="text" class="grow" name="treatmentType" />
+			Type de traitement
+			<input type="text" class="grow" name="treatment_type" />
 		</label>
 		<label class="input input-bordered flex items-center gap-2">
-			treatmentDate
-			<input type="date" class="grow" name="treatmentDate" />
+			Date de traitement
+			<input type="date" class="grow" name="treatment_date" />
+		</label>
+		<button type="submit" class="btn">Enregistrer</button>
+	</form>
+
+	<form
+		action="?/updatePatient"
+		method="post"
+		class="flex flex-col"
+		use:enhance={({ formElement }) => {
+			return async ({ result }) => {
+				if (result.type === 'success') {
+					formElement.reset();
+				}
+			};
+		}}
+	>
+		<label class="input input-bordered flex items-center gap-2">
+			Nom du patient
+			<input type="text" class="grow" name="patient_name" />
+		</label>
+		<label class="input input-bordered flex items-center gap-2">
+			Numéro de téléphone
+			<input type="text" class="grow" name="patient_phone_number" />
+		</label>
+		<label class="input input-bordered flex items-center gap-2">
+			Rue
+			<input type="text" class="grow" name="street" />
+		</label>
+		<label class="input input-bordered flex items-center gap-2">
+			Code postal
+			<input type="text" class="grow" name="postal_code" />
+		</label>
+		<label class="input input-bordered flex items-center gap-2">
+			Ville
+			<input type="text" class="grow" name="city" />
+		</label>
+		<label class="input input-bordered flex items-center gap-2">
+			Pays
+			<input type="text" class="grow" name="country" />
+		</label>
+		<label class="input input-bordered flex items-center gap-2">
+			Email
+			<input type="text" class="grow" name="patient_email" />
 		</label>
 		<button type="submit" class="btn">Enregistrer</button>
 	</form>
@@ -61,150 +117,90 @@
 							src="https://randomuser.me/api/portraits/men/94.jpg"
 							class="mb-4 h-32 w-32 shrink-0 rounded-full bg-gray-300"
 						/>
-						<h1 class="text-xl font-bold">{patient?.formattedName}</h1>
-						<p class="text-gray-700">{patient?.phoneNumber}</p>
+						<h1 class="text-xl font-bold">{patient?.formatted_name}</h1>
+						<p class="text-gray-700">{patient?.patient_phone_number}</p>
 					</div>
 					<hr class="my-6 border-t border-gray-300" />
 					<div class="flex flex-col">
 						<span class="mb-2 font-bold uppercase tracking-wider text-gray-700">Adresse</span>
 						<ul>
-							<li class="mb-2">{patient?.adress}</li>
+							<li class="mb-2">{patient?.street}</li>
 							<li class="mb-2">{patient?.postal_code}</li>
 							<li class="mb-2">{patient?.city}</li>
 							<li class="mb-2">{patient?.country}</li>
-							<li class="mb-2">{patient?.email}</li>
+							<li class="mb-2">{patient?.patient_email}</li>
 						</ul>
 					</div>
 				</div>
 			</div>
 			<div class="col-span-4 sm:col-span-9">
-				<div class="rounded-lg bg-white p-6 shadow">
-					<h2 class="mb-4 text-xl font-bold">About Me</h2>
-					<p class="text-gray-700">
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus est vitae tortor
-						ullamcorper, ut vestibulum velit convallis. Aenean posuere risus non velit egestas
-						suscipit. Nunc finibus vel ante id euismod. Vestibulum ante ipsum primis in faucibus
-						orci luctus et ultrices posuere cubilia Curae; Aliquam erat volutpat. Nulla vulputate
-						pharetra tellus, in luctus risus rhoncus id.
-					</p>
-
-					<h3 class="-mb-2 mt-3 text-center font-semibold">Find me on</h3>
-					<div class="my-6 flex items-center justify-center gap-6">
-						<a
-							class="text-gray-700 hover:text-orange-600"
-							aria-label="Visit TrendyMinds LinkedIn"
-							href=""
-							target="_blank"
-						>
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="h-6">
-								<path
-									fill="currentColor"
-									d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"
+				<div class="mt-7 overflow-x-auto">
+					<table class="w-full whitespace-nowrap">
+						<thead>
+							<tr>
+								<th class="pl-5 text-start">Type de traitement</th>
+								<th class="pl-5 text-start">Date</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each patient_data as patient}
+								<tr
+									class="h-16 rounded border border-gray-100 hover:bg-indigo-50 focus:outline-none"
 								>
-								</path>
-							</svg>
-						</a>
-						<a
-							class="text-gray-700 hover:text-orange-600"
-							aria-label="Visit TrendyMinds YouTube"
-							href=""
-							target="_blank"
-						>
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="h-6">
-								<path
-									fill="currentColor"
-									d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"
-								>
-								</path>
-							</svg>
-						</a>
-						<a
-							class="text-gray-700 hover:text-orange-600"
-							aria-label="Visit TrendyMinds Facebook"
-							href=""
-							target="_blank"
-						>
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="h-6">
-								<path
-									fill="currentColor"
-									d="m279.14 288 14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"
-								>
-								</path>
-							</svg>
-						</a>
-						<a
-							class="text-gray-700 hover:text-orange-600"
-							aria-label="Visit TrendyMinds Instagram"
-							href=""
-							target="_blank"
-						>
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="h-6">
-								<path
-									fill="currentColor"
-									d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"
-								>
-								</path>
-							</svg>
-						</a>
-						<a
-							class="text-gray-700 hover:text-orange-600"
-							aria-label="Visit TrendyMinds Twitter"
-							href=""
-							target="_blank"
-						>
-							<svg class="h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-								<path
-									fill="currentColor"
-									d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"
-								>
-								</path>
-							</svg>
-						</a>
-					</div>
-
-					<h2 class="mb-4 mt-6 text-xl font-bold">Experience</h2>
-					<div class="mb-6">
-						<div class="flex w-full flex-wrap justify-between gap-2">
-							<span class="font-bold text-gray-700">Web Developer</span>
-							<p>
-								<span class="mr-2 text-gray-700">at ABC Company</span>
-								<span class="text-gray-700">2017 - 2019</span>
-							</p>
-						</div>
-						<p class="mt-2">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus est vitae tortor
-							ullamcorper, ut vestibulum velit convallis. Aenean posuere risus non velit egestas
-							suscipit.
-						</p>
-					</div>
-					<div class="mb-6">
-						<div class="flex w-full flex-wrap justify-between gap-2">
-							<span class="font-bold text-gray-700">Web Developer</span>
-							<p>
-								<span class="mr-2 text-gray-700">at ABC Company</span>
-								<span class="text-gray-700">2017 - 2019</span>
-							</p>
-						</div>
-						<p class="mt-2">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus est vitae tortor
-							ullamcorper, ut vestibulum velit convallis. Aenean posuere risus non velit egestas
-							suscipit.
-						</p>
-					</div>
-					<div class="mb-6">
-						<div class="flex w-full flex-wrap justify-between gap-2">
-							<span class="font-bold text-gray-700">Web Developer</span>
-							<p>
-								<span class="mr-2 text-gray-700">at ABC Company</span>
-								<span class="text-gray-700">2017 - 2019</span>
-							</p>
-						</div>
-						<p class="mt-2">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus est vitae tortor
-							ullamcorper, ut vestibulum velit convallis. Aenean posuere risus non velit egestas
-							suscipit.
-						</p>
-					</div>
+									<td>
+										<div class="flex items-center pl-5">
+											<p class="mr-2 text-base font-medium leading-none">
+												{patient.treatment_type}
+											</p>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												viewBox="0 0 16 16"
+												fill="none"
+											>
+												<path
+													d="M6.66669 9.33342C6.88394 9.55515 7.14325 9.73131 7.42944 9.85156C7.71562 9.97182 8.02293 10.0338 8.33335 10.0338C8.64378 10.0338 8.95108 9.97182 9.23727 9.85156C9.52345 9.73131 9.78277 9.55515 10 9.33342L12.6667 6.66676C13.1087 6.22473 13.357 5.62521 13.357 5.00009C13.357 4.37497 13.1087 3.77545 12.6667 3.33342C12.2247 2.89139 11.6251 2.64307 11 2.64307C10.3749 2.64307 9.77538 2.89139 9.33335 3.33342L9.00002 3.66676"
+													stroke="#3B82F6"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												></path>
+												<path
+													d="M9.33336 6.66665C9.11611 6.44492 8.8568 6.26876 8.57061 6.14851C8.28442 6.02825 7.97712 5.96631 7.66669 5.96631C7.35627 5.96631 7.04897 6.02825 6.76278 6.14851C6.47659 6.26876 6.21728 6.44492 6.00003 6.66665L3.33336 9.33332C2.89133 9.77534 2.64301 10.3749 2.64301 11C2.64301 11.6251 2.89133 12.2246 3.33336 12.6666C3.77539 13.1087 4.37491 13.357 5.00003 13.357C5.62515 13.357 6.22467 13.1087 6.66669 12.6666L7.00003 12.3333"
+													stroke="#3B82F6"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												></path>
+											</svg>
+										</div>
+									</td>
+									<td class="pl-5">
+										<div class="flex items-center">
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="20"
+												height="20"
+												viewBox="0 0 20 20"
+												fill="none"
+											>
+												<path
+													d="M15.8333 13.3333C14.7217 13.3333 13.6392 13.1026 12.6383 12.655C12.2358 12.4717 11.735 12.5967 11.4217 12.91L10.1025 14.23C7.6825 12.9967 5.67167 10.9858 4.43833 8.56583L5.75833 7.245C6.07167 6.93167 6.19667 6.43083 6.01333 6.02833C5.56583 5.0275 5.33333 3.945 5.33333 2.83333C5.33333 2.3725 4.96083 2 4.5 2H2.83333C2.3725 2 2 2.3725 2 2.83333C2 12.2 7.8 18 17.1667 18C17.6275 18 18 17.6275 18 17.1667V15.5C18 15.0392 17.6275 14.6667 17.1667 14.6667H15.8333Z"
+													stroke="#52525B"
+													stroke-width="1.25"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												/>
+											</svg>
+											<p class="ml-2 text-sm leading-none">
+												{patient.treatment_date}
+											</p>
+										</div>
+									</td>
+								</tr>
+								<tr class="h-2"></tr>
+							{/each}
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>

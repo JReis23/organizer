@@ -1,6 +1,6 @@
-CREATE TABLE IF NOT EXISTS "adress" (
+CREATE TABLE IF NOT EXISTS "address" (
 	"id" text PRIMARY KEY NOT NULL,
-	"adress" varchar(100),
+	"street" varchar(100),
 	"city" varchar(50),
 	"postal_code" varchar(10),
 	"country" varchar(20) DEFAULT 'France',
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 );
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "patient" ADD CONSTRAINT "patient_adressId_id_adress_id_fk" FOREIGN KEY ("adressId_id") REFERENCES "public"."adress"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "patient" ADD CONSTRAINT "patient_adressId_id_address_id_fk" FOREIGN KEY ("adressId_id") REFERENCES "public"."address"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

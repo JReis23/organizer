@@ -1,5 +1,4 @@
 <script lang="ts">
-	// import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
 	import Form from '$lib/components/ui/Form.svelte';
 
@@ -7,8 +6,8 @@
 
 	const fields = [
 		{
-			inputName: 'username',
-			inputType: 'text',
+			input_name: 'user_name',
+			input_type: 'text',
 			placeholder: 'User Name',
 			icon: true,
 			svg: {
@@ -24,8 +23,8 @@
 			]
 		},
 		{
-			inputName: 'email',
-			inputType: 'email',
+			input_name: 'user_email',
+			input_type: 'email',
 			placeholder: 'Email',
 			icon: true,
 			svg: {
@@ -44,9 +43,9 @@
 			]
 		},
 		{
-			inputName: 'password',
+			input_name: 'password',
 			placeholder: 'password',
-			inputType: 'password',
+			input_type: 'password',
 			icon: true,
 			svg: {
 				xmlns: 'http://www.w3.org/2000/svg',
@@ -68,12 +67,12 @@
 		{
 			type: 'submit' as const,
 			name: 'Connecter',
-			class: ''
+			class_name: ''
 		},
 		{
 			formaction: '?/register',
 			name: 'Registrer',
-			class: ''
+			class_name: ''
 		}
 	];
 </script>

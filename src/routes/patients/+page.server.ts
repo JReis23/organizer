@@ -11,26 +11,24 @@ export const load: PageServerLoad = async (event) => {
 
 	const patients = await db
 		.select({
-			patientName: table.patient.patientName,
-			adress: table.adress.adress, // Keeping original spelling
-			postal_code: table.adress.postal_code,
-			phoneNumber: table.patient.phoneNumber,
-			patientId: table.patient.id,
-			patientCity: table.adress.city,
-			treatmentType: table.treatments.treatmentType,
-			treatmentUpcomming: table.treatments.treatmentDate // Matching type definition spelling
+			patient_name: table.patients.patient_name,
+			street: table.addresses.street,
+			postal_code: table.addresses.postal_code,
+			patient_phone_number: table.patients.patient_phone_number,
+			patient_id: table.patients.id,
+			city: table.addresses.city,
+			treatment_type: table.treatments.treatment_type,
+			treatment_date: table.treatments.treatment_date
 		})
-		.from(table.adress)
-		.leftJoin(table.patient, eq(table.adress.id, table.patient.adressId))
-		.leftJoin(table.treatments, eq(table.patient.id, table.treatments.patientId))
-		.orderBy(desc(table.treatments.treatmentDate));
+		.from(table.addresses)
+		.leftJoin(table.patients, eq(table.addresses.id, table.patients.address_id))
+		.leftJoin(table.treatments, eq(table.patients.id, table.treatments.patient_id))
+		.orderBy(desc(table.treatments.treatment_date));
 
 	// Map the results and handle the date conversion
 	const formattedPatients = patients.map((patient) => ({
 		...patient,
-		treatmentUpcomming: patient.treatmentUpcomming
-			? new Date(patient.treatmentUpcomming).toISOString()
-			: null
+		treatment_date: patient.treatment_date ? new Date(patient.treatment_date).toISOString() : null
 	}));
 
 	return { patients: formattedPatients };

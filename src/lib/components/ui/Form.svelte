@@ -3,30 +3,36 @@
 
 	interface Path {
 		d: string;
-		fillRule?: 'inherit' | 'nonzero' | 'evenodd';
-		clipRule?: 'inherit' | 'nonzero' | 'evenodd';
+		fill_rule?: 'inherit' | 'nonzero' | 'evenodd';
+		clip_rule?: 'inherit' | 'nonzero' | 'evenodd';
 	}
 
 	interface Field {
-		inputType: string;
-		inputName: string;
-		labelName?: string;
+		input_type: string;
+		input_name: string;
+		label_name?: string;
 		placeholder?: string;
-		icon?: Boolean;
-		svg?: { xmlns?: string; viewBox?: string; fill?: string; class?: string };
+		icon?: boolean;
+		svg?: {
+			xmlns?: string;
+			view_box?: string;
+			fill?: string;
+			class_name?: string;
+		};
 		paths?: Path[];
 	}
-	interface Buttons {
+
+	interface Button {
 		type?: 'button' | 'reset' | 'submit' | null | undefined;
-		class?: string;
-		formaction?: string;
+		class_name?: string;
+		form_action?: string;
 		name?: string;
 	}
 
 	interface Props {
 		action: string;
 		fields: Field[];
-		buttons: Buttons[];
+		buttons: Button[];
 	}
 
 	let data: Props = $props();
@@ -38,32 +44,39 @@
 			{#if field.icon && field.svg && field.paths}
 				<svg
 					xmlns={field.svg.xmlns}
-					viewBox={field.svg.viewBox}
+					viewBox={field.svg.view_box}
 					fill={field.svg.fill}
-					class={field.svg.class}
+					class={field.svg.class_name}
 				>
 					{#each field.paths as path}
-						<path d={path.d} fill-rule={path.fillRule} clip-rule={path.clipRule}></path>
+						<path d={path.d} fill-rule={path.fill_rule} clip-rule={path.clip_rule} />
 					{/each}
 				</svg>
 			{:else}
-				{field.labelName}
+				{field.label_name}
 			{/if}
 			<input
-				type={field.inputType}
+				type={field.input_type}
 				class="grow"
-				name={field.inputName}
+				name={field.input_name}
 				placeholder={field.placeholder}
 			/>
 		</label>
 	{/each}
+
 	{#each data.buttons as button}
 		{#if button.type}
-			<button type={button.type} class="btn {button.class}">{button.name}</button>
-		{:else if button.formaction}
-			<button class="btn {button.class}" formaction={button.formaction}>{button.name}</button>
+			<button type={button.type} class="btn {button.class_name}">
+				{button.name}
+			</button>
+		{:else if button.form_action}
+			<button class="btn {button.class_name}" formaction={button.form_action}>
+				{button.name}
+			</button>
 		{:else}
-			<button class="btn {button.class}">{button.name}</button>
+			<button class="btn {button.class_name}">
+				{button.name}
+			</button>
 		{/if}
 	{/each}
 </form>

@@ -1,52 +1,54 @@
 import { pgTable, text, integer, timestamp, varchar } from 'drizzle-orm/pg-core';
-export const user = pgTable('user', {
+
+export const users = pgTable('users', {
 	id: text('id').primaryKey(),
-	username: text('username').notNull().unique(),
-	passwordHash: text('password_hash').notNull(),
-	createdAt: timestamp('createdAt').defaultNow(),
-	updatedAt: timestamp('updatedAt').defaultNow(),
-	email: text('email').unique().notNull()
+	user_name: text('user_name').notNull().unique(),
+	password_hash: text('password_hash').notNull(),
+	created_at: timestamp('created_at').defaultNow(),
+	updated_at: timestamp('updated_at').defaultNow(),
+	user_email: text('user_email').unique().notNull()
 });
 
-export const session = pgTable('session', {
+export const sessions = pgTable('sessions', {
 	id: text('id').primaryKey(),
-	userId: text('user_id')
+	user_id: text('user_id')
 		.notNull()
-		.references(() => user.id),
-	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull()
+		.references(() => users.id),
+	expires_at: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull()
 });
 
-export const adress = pgTable('adress', {
-	id: text('id').primaryKey(), // Clé primaire
-	adress: varchar('adress', { length: 100 }),
+export const addresses = pgTable('addresses', {
+	id: text('id').primaryKey(),
+	street: varchar('street', { length: 100 }),
 	city: varchar('city', { length: 50 }),
 	postal_code: varchar('postal_code', { length: 10 }),
 	country: varchar('country', { length: 20 }).default('France'),
-	createdAt: timestamp('createdAt').defaultNow(),
-	updatedAt: timestamp('updatedAt').defaultNow()
+	created_at: timestamp('created_at').defaultNow(),
+	updated_at: timestamp('updated_at').defaultNow()
 });
 
-export const patient = pgTable('patient', {
+export const patients = pgTable('patients', {
 	id: text('id').primaryKey(),
 	age: integer('age'),
-	patientName: text('patientName').notNull().unique(),
-	createdAt: timestamp('createdAt').defaultNow(),
-	updatedAt: timestamp('updatedAt').defaultNow(),
-	adressId: text('adressId_id').references(() => adress.id),
-	phoneNumber: text('phone_number'),
-	email: varchar('email', { length: 150 }).unique()
+	patient_name: text('patient_name').notNull().unique(),
+	created_at: timestamp('created_at').defaultNow(),
+	updated_at: timestamp('updated_at').defaultNow(),
+	address_id: text('address_id').references(() => addresses.id),
+	patient_phone_number: text('phone_number'),
+	patient_email: varchar('email', { length: 150 }).unique()
 });
 
 export const treatments = pgTable('treatments', {
-	id: text('id').primaryKey(), // Clé primaire
-	treatmentDate: timestamp('treatmentDate'),
-	treatmentType: varchar('treatmentType', { length: 256 }),
-	patientId: text('patient_id').references(() => patient.id), // Clé étrangère vers 'users'
-	createdAt: timestamp('createdAt').defaultNow(),
-	updatedAt: timestamp('updatedAt').defaultNow()
+	id: text('id').primaryKey(),
+	treatment_date: timestamp('treatment_date'),
+	treatment_type: varchar('treatment_type', { length: 256 }),
+	patient_id: text('patient_id').references(() => patients.id),
+	created_at: timestamp('created_at').defaultNow(),
+	updated_at: timestamp('updated_at').defaultNow()
 });
 
-export type Session = typeof session.$inferSelect;
-export type User = typeof user.$inferSelect;
-export type Adress = typeof adress.$inferSelect;
+export type Session = typeof sessions.$inferSelect;
+export type User = typeof users.$inferSelect;
+export type Address = typeof addresses.$inferSelect;
+export type Patient = typeof patients.$inferSelect;
 export type Treatment = typeof treatments.$inferSelect;
