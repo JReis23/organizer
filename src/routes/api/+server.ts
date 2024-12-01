@@ -1,7 +1,12 @@
 import { error } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, locals }) => {
+	if (!locals.session) {
+		throw redirect(303, '/login');
+	}
+
 	try {
 		const query = url.searchParams.get('q') || '';
 

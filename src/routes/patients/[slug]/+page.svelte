@@ -147,8 +147,7 @@
 						<span class="mb-2 font-bold uppercase tracking-wider text-gray-700">Adresse</span>
 						<ul>
 							<li class="mb-2">{patient?.street}</li>
-							<li class="mb-2">{patient?.postal_code}</li>
-							<li class="mb-2">{patient?.city}</li>
+							<li class="mb-2">{patient?.postal_code} {patient?.city}</li>
 							<li class="mb-2">{patient?.country}</li>
 							<li class="mb-2">{patient?.patient_email}</li>
 						</ul>
