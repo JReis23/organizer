@@ -288,27 +288,21 @@
 								</div>
 							</td>
 							<td class="pl-5">
-								{#if dateCompare(patient.treatment_date).result === 'alert'}
-									<Button
-										href="#"
-										className="rounded bg-red-100 px-3 py-3 text-sm leading-none text-red-700 focus:outline-none"
-									>
-										{#snippet buttonText()}
-											{dateCompare(patient.treatment_date).formattedDate}
-										{/snippet}
-									</Button>
-								{:else if dateCompare(patient.treatment_date).result === 'success'}
-									<Button
-										href="#"
-										className="rounded bg-green-300 px-3 py-3 text-sm leading-none text-green-950 focus:outline-none"
-									>
-										{#snippet buttonText()}
-											{dateCompare(patient.treatment_date).formattedDate}
-										{/snippet}
-									</Button>
-								{:else if dateCompare(patient.treatment_date).result === 'warning'}
-									<div class="hidden"></div>
-								{/if}
+								<Button
+									href="#"
+									className=" rounded px-3 py-3 text-sm leading-none  focus:outline-none
+									{dateCompare(patient.treatment_date).result === 'alert'
+										? 'bg-red-100 text-red-700'
+										: dateCompare(patient.treatment_date).result === 'success'
+											? 'bg-green-300 text-green-800'
+											: dateCompare(patient.treatment_date).result === 'warning'
+												? 'hidden'
+												: 'hidden'} "
+								>
+									{#snippet buttonText()}
+										{dateCompare(patient.treatment_date).formattedDate}
+									{/snippet}
+								</Button>
 							</td>
 							<td class="pl-4">
 								<Button

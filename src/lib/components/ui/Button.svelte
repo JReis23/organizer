@@ -25,9 +25,10 @@
 		svg?: SvgProps;
 		buttonText: Snippet;
 		onclick?: (event: MouseEvent) => void;
+		arialabel?: string;
 	}
 
-	let { type, className, formaction, href, buttonText, svg, onclick }: Props = $props();
+	let { type, className, formaction, href, buttonText, svg, onclick, arialabel }: Props = $props();
 </script>
 
 {#if type}
@@ -60,7 +61,7 @@
 		{@render buttonText()}</a
 	>
 {:else}
-	<button {onclick} class={className}>{@render buttonText()}</button>
+	<button {onclick} class={className} aria-label={arialabel}>{@render buttonText()}</button>
 {/if}
 
 <!-- <script lang="ts">

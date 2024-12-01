@@ -1,82 +1,41 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-
-	interface Path {
-		d: string;
-		fill_rule?: 'inherit' | 'nonzero' | 'evenodd';
-		clip_rule?: 'inherit' | 'nonzero' | 'evenodd';
-	}
-
-	interface Field {
-		input_type: string;
+	export let fields: Array<{
 		input_name: string;
-		label_name?: string;
-		placeholder?: string;
-		icon?: boolean;
-		svg?: {
-			xmlns?: string;
-			view_box?: string;
-			fill?: string;
-			class_name?: string;
-		};
-		paths?: Path[];
-	}
-
-	interface Button {
-		type?: 'button' | 'reset' | 'submit' | null | undefined;
-		class_name?: string;
-		form_action?: string;
-		name?: string;
-	}
-
-	interface Props {
-		action: string;
-		fields: Field[];
-		buttons: Button[];
-	}
-
-	let data: Props = $props();
+		label_name: string;
+		input_type: string;
+		value?: string;
+		onInput?: (event: Event) => void;
+	}>;
+	export let buttons: Array<{
+		type: 'submit' | 'button';
+		name: string;
+		class_name: string;
+	}>;
+	export let action: string;
 </script>
 
-<form action={data.action} method="post" class="flex flex-col" use:enhance>
-	{#each data.fields as field}
-		<label class="input input-bordered flex items-center gap-2">
-			{#if field.icon && field.svg && field.paths}
-				<svg
-					xmlns={field.svg.xmlns}
-					viewBox={field.svg.view_box}
-					fill={field.svg.fill}
-					class={field.svg.class_name}
-				>
-					{#each field.paths as path}
-						<path d={path.d} fill-rule={path.fill_rule} clip-rule={path.clip_rule} />
-					{/each}
-				</svg>
-			{:else}
+<form method="POST" {action} class="space-y-6">
+	{#each fields as field}
+		<div class="space-y-2">
+			<label for={field.input_name} class="block text-sm font-medium text-gray-700">
 				{field.label_name}
-			{/if}
+			</label>
 			<input
 				type={field.input_type}
-				class="grow"
 				name={field.input_name}
-				placeholder={field.placeholder}
+				id={field.input_name}
+				value={field.value || ''}
+				on:input={field.onInput}
+				class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
 			/>
-		</label>
+		</div>
 	{/each}
 
-	{#each data.buttons as button}
-		{#if button.type}
-			<button type={button.type} class="btn {button.class_name}">
+	<div class="flex justify-end space-x-4 pt-4">
+		{#each buttons as button}
+			<button type={button.type} class={button.class_name}>
 				{button.name}
 			</button>
-		{:else if button.form_action}
-			<button class="btn {button.class_name}" formaction={button.form_action}>
-				{button.name}
-			</button>
-		{:else}
-			<button class="btn {button.class_name}">
-				{button.name}
-			</button>
-		{/if}
-	{/each}
+		{/each}
+	</div>
 </form>

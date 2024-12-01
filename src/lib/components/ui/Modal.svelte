@@ -28,16 +28,13 @@
 		aria-modal="true"
 		class="fixed z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
 	>
-		<Button
-			className="absolute inset-0 h-full w-full cursor-default"
-			onclick={onClose}
-			arialabel="Close modal overlay"
-			>{#snippet buttonText()}
-				Open
-			{/snippet}</Button
-		>
 		<div class="p-6">
 			{@render modalText()}
 		</div>
+		<Button className="btn" onclick={onClose} arialabel="Close modal overlay"
+			>{#snippet buttonText()}
+				Fermer
+			{/snippet}</Button
+		>
 	</div>
 {/if}

@@ -2,6 +2,7 @@
 	import type { PageData, ActionData } from './$types';
 	import { enhance } from '$app/forms';
 	import Modal from '$lib/components/ui/Modal.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let { data }: { data: PageData; form: ActionData } = $props();
 	let patient_data = $state(data.patients) as PageData['patients'];
@@ -27,86 +28,93 @@
 		};
 	}
 
-	let is_open = $state(false);
+	let isOpenUpdatePatient = $state(false);
+	let isOpenTreatment = $state(false);
 
-	function handleClose(): void {
-		is_open = false;
+	function handleClosePatient(): void {
+		isOpenUpdatePatient = !isOpenUpdatePatient;
+	}
+
+	function handleCloseTreatment(): void {
+		isOpenTreatment = !isOpenTreatment;
 	}
 </script>
 
-<Modal open={is_open} onClose={handleClose}>
+<Modal open={isOpenUpdatePatient} onClose={handleClosePatient}>
 	{#snippet modalText()}
-		<h2>Modal Content</h2>
+		<form
+			action="?/updatePatient"
+			method="post"
+			class="flex flex-col"
+			use:enhance={({ formElement }) => {
+				return async ({ result }) => {
+					if (result.type === 'success') {
+						formElement.reset();
+					}
+				};
+			}}
+		>
+			<label class="input input-bordered flex items-center gap-2">
+				Nom du patient
+				<input type="text" class="grow" name="patient_name" />
+			</label>
+			<label class="input input-bordered flex items-center gap-2">
+				Numéro de téléphone
+				<input type="text" class="grow" name="patient_phone_number" />
+			</label>
+			<label class="input input-bordered flex items-center gap-2">
+				Rue
+				<input type="text" class="grow" name="street" />
+			</label>
+			<label class="input input-bordered flex items-center gap-2">
+				Code postal
+				<input type="text" class="grow" name="postal_code" />
+			</label>
+			<label class="input input-bordered flex items-center gap-2">
+				Ville
+				<input type="text" class="grow" name="city" />
+			</label>
+			<label class="input input-bordered flex items-center gap-2">
+				Pays
+				<input type="text" class="grow" name="country" />
+			</label>
+			<label class="input input-bordered flex items-center gap-2">
+				Email
+				<input type="text" class="grow" name="patient_email" />
+			</label>
+			<button type="submit" class="btn">Enregistrer</button>
+		</form>
+	{/snippet}
+</Modal>
+
+<Modal open={isOpenTreatment} onClose={handleCloseTreatment}>
+	{#snippet modalText()}
+		<form
+			action="?/treatment"
+			method="post"
+			class="flex flex-col"
+			use:enhance={({ formElement }) => {
+				return async ({ result }) => {
+					if (result.type === 'success') {
+						formElement.reset();
+					}
+				};
+			}}
+		>
+			<label class="input input-bordered flex items-center gap-2">
+				Type de traitement
+				<input type="text" class="grow" name="treatment_type" />
+			</label>
+			<label class="input input-bordered flex items-center gap-2">
+				Date de traitement
+				<input type="date" class="grow" name="treatment_date" />
+			</label>
+			<button type="submit" class="btn">Enregistrer</button>
+		</form>
 	{/snippet}
 </Modal>
 
 <div class="border">
-	<form
-		action="?/treatment"
-		method="post"
-		class="flex flex-col"
-		use:enhance={({ formElement }) => {
-			return async ({ result }) => {
-				if (result.type === 'success') {
-					formElement.reset();
-				}
-			};
-		}}
-	>
-		<label class="input input-bordered flex items-center gap-2">
-			Type de traitement
-			<input type="text" class="grow" name="treatment_type" />
-		</label>
-		<label class="input input-bordered flex items-center gap-2">
-			Date de traitement
-			<input type="date" class="grow" name="treatment_date" />
-		</label>
-		<button type="submit" class="btn">Enregistrer</button>
-	</form>
-
-	<form
-		action="?/updatePatient"
-		method="post"
-		class="flex flex-col"
-		use:enhance={({ formElement }) => {
-			return async ({ result }) => {
-				if (result.type === 'success') {
-					formElement.reset();
-				}
-			};
-		}}
-	>
-		<label class="input input-bordered flex items-center gap-2">
-			Nom du patient
-			<input type="text" class="grow" name="patient_name" />
-		</label>
-		<label class="input input-bordered flex items-center gap-2">
-			Numéro de téléphone
-			<input type="text" class="grow" name="patient_phone_number" />
-		</label>
-		<label class="input input-bordered flex items-center gap-2">
-			Rue
-			<input type="text" class="grow" name="street" />
-		</label>
-		<label class="input input-bordered flex items-center gap-2">
-			Code postal
-			<input type="text" class="grow" name="postal_code" />
-		</label>
-		<label class="input input-bordered flex items-center gap-2">
-			Ville
-			<input type="text" class="grow" name="city" />
-		</label>
-		<label class="input input-bordered flex items-center gap-2">
-			Pays
-			<input type="text" class="grow" name="country" />
-		</label>
-		<label class="input input-bordered flex items-center gap-2">
-			Email
-			<input type="text" class="grow" name="patient_email" />
-		</label>
-		<button type="submit" class="btn">Enregistrer</button>
-	</form>
-
 	<div class="container mx-auto py-8">
 		<div class="grid grid-cols-4 gap-6 px-4 sm:grid-cols-12">
 			<div class="col-span-4 sm:col-span-3">
@@ -120,6 +128,20 @@
 						<h1 class="text-xl font-bold">{patient?.formatted_name}</h1>
 						<p class="text-gray-700">{patient?.patient_phone_number}</p>
 					</div>
+					<Button
+						className="btn bg-indigo-800 text-indigo-300 rounded-lg outline-0"
+						onclick={handleClosePatient}
+						>{#snippet buttonText()}
+							Changer
+						{/snippet}</Button
+					>
+					<Button
+						className="btn bg-indigo-800 text-indigo-300 rounded-lg outline-0"
+						onclick={handleCloseTreatment}
+						>{#snippet buttonText()}
+							Treatement
+						{/snippet}</Button
+					>
 					<hr class="my-6 border-t border-gray-300" />
 					<div class="flex flex-col">
 						<span class="mb-2 font-bold uppercase tracking-wider text-gray-700">Adresse</span>
